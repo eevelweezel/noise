@@ -10,7 +10,7 @@ from pyo import *
 
 def process_audio():
     """
-    :a_file - user input of path/to/audio.file
+    :a_file: user input of path/to/audio.file
 
     Step 1: separate audio file (Repet shows the most promise)
     - need to play w/ masks, threshholds
@@ -54,7 +54,8 @@ def vocoder():
 
 def process_lyrics():
     """
-    :l_file - user input of path/to/lyrics.file
+    :l_file: user input of path/to/lyrics.file
+
     Process a text file containing new lyrics.
     """
     l_file = raw_input('Path to lyrics file')
