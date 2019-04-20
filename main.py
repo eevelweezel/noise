@@ -5,12 +5,12 @@ from nussl import (
     AudioSignal,
     Repet
 )
+import os
 from pyo import *
 
-def process_audio(lyrics):
+def process_audio():
     """
     :a_file - user input of path/to/audio.file
-    :o_file - user input of path/to/output.file
 
     Step 1: separate audio file (Repet shows the most promise)
     - need to play w/ masks, threshholds
@@ -20,31 +20,37 @@ def process_audio(lyrics):
     Step 3: profit.
     """
     a_file = raw_input('Path to Audio file:  ')
-    o_file = raw_input('Path to Output file:  ')
     try:
         signal = nussl.AudioSignal(a_file)
-        lyrics = AudioSignal(lyrics)
         rep = Repet(signal, 3)
         rep.run()
         fg, bg = rep.make_audio_signals()
         fg.write_audio_to_file('fg_temp.wav')
         bg.write_audio_to_file('bg_temp.wav')
-        # TODO: need to determine which is fg...
-        # Also, damn... projet takes a while.
-        # probably need to find a vector from fg and
-        # apply it to lyrics... or something.
-
-        # init pyo
-        s = Server().boot()
-        s.start()
-        # TODO: how do I actually read from files...?
-        payload = PVMorph(lyrics, fg_signal, fade=0.5)
-        output = PVMix(payload, bg_signal
-        savefile(output, o_file, sr=44100, channels=1, fileformat=7)
-
     except NoBackendError:
         print 'No backend for selected media format, please ensure ffmpeg is installed.'
-    return
+
+def vocoder():
+    """
+    :o_file: name of .OGG output file
+
+    Run foreground and lyrics through phase vocoder (pyo)
+    """
+    # init pyo
+    s = Server().boot()
+    s.start()
+    o_file = raw_input('Name of Output file (.OGG format):  ')
+
+    fg_sig = SfPlayer('fg_temp.wav', loop=False)
+    lyr_sig = SfPlayer('lyrics_temp.mp3', loop=False)
+    bg_sig = SfPlayer('bg_temp.wav', loop=False)
+    # ummm... prolly should handle some exceptions
+
+    mix = PVMorph(lyr_sig, fg_sig, fade=0.5)
+    output = PVMix(mix, bg_sig)
+    savefile(output, o_file, sr=44100, channels=1, fileformat=7)
+
+    print "Output written to {}, in .OGG format".format(o_file)
 
 def process_lyrics():
     """
@@ -53,9 +59,21 @@ def process_lyrics():
     """
     l_file = raw_input('Path to lyrics file')
     with open(l_file, 'r') as l:
-        return gTTS(l_file)
+        lyrics = gTTS(l_file)
+        lyrics.save('lyrics_temp.mp3')
+
+def clean_up():
+    """
+    Delete temp files.
+    """
+    print "Cleaning up..."
+    os.remove('lyrics_temp.m3')
+    os.remove('bg_temp.wav')
+    os.remove('fg_temp.wav')
 
 
 if __name__ == '__main__':
     lyrics = process_lyrics()
-    process_audio(lyrics)
+    process_audio()
+    vocoder()
+    clean_up()
