@@ -1,6 +1,5 @@
 import codecs
 from audioread import NoBackendError
-from gtts import gTTS
 from numpy import fft
 from nussl import (
     AudioSignal,
@@ -62,8 +61,8 @@ def process_lyrics():
     l_file = raw_input('Path to lyrics file:  ')
     with open(l_file, 'r') as l:
         text = l.read()
-        lyrics = gTTS(text)
-        lyrics.save('lyrics_temp.wav')
+        os.system("espeak '{}' > lyrics_temp.wav".format(text))
+    return
 
 def clean_up():
     """

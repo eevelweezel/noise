@@ -1,6 +1,5 @@
 attrs==19.1.0
 audioread==2.1.6
-gTTS==2.0.3
 musdb==0.2.3
 museval==0.2.0
 nussl==0.1.6
