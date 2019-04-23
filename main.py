@@ -1,3 +1,4 @@
+import codecs
 from audioread import NoBackendError
 from gtts import gTTS
 from numpy import fft
@@ -21,7 +22,7 @@ def process_audio():
     """
     a_file = raw_input('Path to Audio file:  ')
     try:
-        signal = nussl.AudioSignal(a_file)
+        signal = AudioSignal(a_file)
         rep = Repet(signal, 3)
         rep.run()
         fg, bg = rep.make_audio_signals()
@@ -39,16 +40,16 @@ def vocoder():
     # init pyo
     s = Server().boot()
     s.start()
-    o_file = raw_input('Name of Output file (.OGG format):  ')
+    o_file = raw_input('Name of Output file (.wav format):  ')
 
     fg_sig = SfPlayer('fg_temp.wav', loop=False)
-    lyr_sig = SfPlayer('lyrics_temp.mp3', loop=False)
+    lyr_sig = SfPlayer('lyrics_temp.wav', loop=False)
     bg_sig = SfPlayer('bg_temp.wav', loop=False)
     # ummm... prolly should handle some exceptions
 
     mix = PVMorph(lyr_sig, fg_sig, fade=0.5)
     output = PVMix(mix, bg_sig)
-    savefile(output, o_file, sr=44100, channels=1, fileformat=7)
+    savefile(output, o_file, sr=44100, channels=1, fileformat=0)
 
     print "Output written to {}, in .OGG format".format(o_file)
 
@@ -58,23 +59,24 @@ def process_lyrics():
 
     Process a text file containing new lyrics.
     """
-    l_file = raw_input('Path to lyrics file')
+    l_file = raw_input('Path to lyrics file:  ')
     with open(l_file, 'r') as l:
-        lyrics = gTTS(l_file)
-        lyrics.save('lyrics_temp.mp3')
+        text = l.read()
+        lyrics = gTTS(text)
+        lyrics.save('lyrics_temp.wav')
 
 def clean_up():
     """
     Delete temp files.
     """
     print "Cleaning up..."
-    os.remove('lyrics_temp.m3')
+    os.remove('lyrics_temp.wav')
     os.remove('bg_temp.wav')
     os.remove('fg_temp.wav')
 
 
 if __name__ == '__main__':
-    lyrics = process_lyrics()
+    process_lyrics()
     process_audio()
     vocoder()
     clean_up()
