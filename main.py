@@ -1,11 +1,10 @@
-import codecs
+import os
+from speek import Speak
 from audioread import NoBackendError
-from numpy import fft
 from nussl import (
     AudioSignal,
     Repet
 )
-import os
 from pyo import *
 
 def process_audio():
@@ -39,10 +38,10 @@ def vocoder():
     # init pyo
     s = Server().boot()
     s.start()
-    o_file = raw_input('Name of Output file (.wav format):  ')
+    o_file = raw_input('Name of Output file (.OGG format):  ')
 
     fg_sig = SfPlayer('fg_temp.wav', loop=False)
-    lyr_sig = SfPlayer('lyrics_temp.wav', loop=False)
+    lyr_sig = SfPlayer('lyrics_temp.wav', loop=True)
     bg_sig = SfPlayer('bg_temp.wav', loop=False)
     # ummm... prolly should handle some exceptions
 
@@ -59,9 +58,14 @@ def process_lyrics():
     Process a text file containing new lyrics.
     """
     l_file = raw_input('Path to lyrics file:  ')
+    speak = Speak()
+    outfile = '{}/lyrics_temp.wav'.format(
+                     os.path.dirname(
+                         os.path.abspath(__file__)))
+
     with open(l_file, 'r') as l:
         text = l.read()
-        os.system("espeak '{}' > lyrics_temp.wav".format(text))
+        speak.save(text, outfile)
     return
 
 def clean_up():
