@@ -45,11 +45,11 @@ def vocoder():
     bg_sig = SfPlayer('bg_temp.wav', loop=False)
     # ummm... prolly should handle some exceptions
 
-    mix = PVMorph(lyr_sig, fg_sig, fade=0.5)
-    output = PVMix(mix, bg_sig)
+    mix = PVMorph(PVAnal(lyr_sig), PVAnal(fg_sig), fade=0.5)
+    output = PVMix(mix, PVAnal(bg_sig))
     savefile(output, o_file, sr=44100, channels=1, fileformat=0)
 
-    print "Output written to {}, in .OGG format".format(o_file)
+    print "Output written to .OGG format"
 
 def process_lyrics():
     """
