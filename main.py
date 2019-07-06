@@ -1,5 +1,5 @@
 import os
-from speek import Speak
+from espeak import Speak
 from audioread import NoBackendError
 from nussl import (
     AudioSignal,
