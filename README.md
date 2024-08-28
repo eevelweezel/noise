@@ -4,6 +4,9 @@ This was intended to be a humorous application to supply alternate lyrics for po
 
 Generative AI has now made this trivial and potentially malicious. This project is dead, and it will not be revived.
 
+-------
+
+
 
 DEATH to earworms.
 
